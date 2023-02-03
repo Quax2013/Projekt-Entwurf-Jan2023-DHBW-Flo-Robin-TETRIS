@@ -28,3 +28,43 @@ void createField()
         printf("-");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void rowFull()
+{
+
+    int intRowFull = 0;
+    for(int i = 0; i < HEIGHT; i++)
+    {
+        for(int j = 0; j < WIDTH; j++)
+        {
+            if(field[i][j] == 2)
+            {
+                intRowFull++;
+            }
+        }
+        if(intRowFull == 12)
+        {
+            for(int k = i; k > 0; k--)
+            {
+                for(int j = 0; j < WIDTH; j++)
+                {
+                    field[k][j] = field[k-1][j];
+                }
+            }
+        }
+    }
+}
