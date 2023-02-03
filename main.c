@@ -169,6 +169,11 @@ void rowFull()
                     field[k][j] = field[k - 1][j];
                 }
             }
+            for (int j = 0; j < WIDTH; j++)
+            {
+               field[0][j] = 0; 
+            }
         }
+        intRowFull = 0;
     }
 }
