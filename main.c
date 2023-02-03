@@ -13,29 +13,10 @@
 
 int field[HEIGHT][WIDTH] = {};
 
-int square[2][2] = {1, 1,
-                    1, 1};
-
-int leftL[2][3] = {1, 0, 0,
-                   1, 1, 1};
-
-int rightL[2][3] = {1, 1, 1,
-                    1, 0, 0};
-
-int leftS[2][3] = {0, 1, 1,
-                   1, 1, 0};
-
-int rightS[2][3] = {1, 1, 0,
-                    0, 1, 1};
-
-int tBlock[2][3] = {0, 1, 0,
-                    1, 1, 1};
-
-int lineBlock[1][4] = {1, 1, 1, 1};
-
 void gotoxy(int x, int y);
 void createField();
 void spawnBlock();
+void rowFull();
 
 int main()
 {
@@ -47,7 +28,7 @@ int main()
     // gotoxy(20 + i, 1);
 
     spawnBlock();
-    //createField();
+    // createField();
 
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -92,6 +73,27 @@ void createField()
 
 void spawnBlock()
 {
+    // Verschiedene Blöcke
+    int square[2][2] = {1, 1,
+                        1, 1};
+
+    int leftL[2][3] = {1, 0, 0,
+                       1, 1, 1};
+
+    int rightL[2][3] = {1, 1, 1,
+                        1, 0, 0};
+
+    int leftS[2][3] = {0, 1, 1,
+                       1, 1, 0};
+
+    int rightS[2][3] = {1, 1, 0,
+                        0, 1, 1};
+
+    int tBlock[2][3] = {0, 1, 0,
+                        1, 1, 1};
+
+    int lineBlock[1][4] = {1, 1, 1, 1};
+
     int block = rand() % 7;
     int *blockPaste;
 
@@ -115,29 +117,57 @@ void spawnBlock()
     }
     else
     {
-        switch (block){
-            case 1:
-                blockPaste = &leftL[0];
-                break;
-            case 2:
-                blockPaste = &rightL[0];
-                break;
-            case 3:
-                blockPaste = &leftS[0];
-                break;
-            case 4:
-                blockPaste = &rightS[0];
-                break;
-            case 5:
-                blockPaste = &tBlock[0];
-                break;
+        switch (block)
+        {
+        case 1:
+            blockPaste = &leftL[0];
+            break;
+        case 2:
+            blockPaste = &rightL[0];
+            break;
+        case 3:
+            blockPaste = &leftS[0];
+            break;
+        case 4:
+            blockPaste = &rightS[0];
+            break;
+        case 5:
+            blockPaste = &tBlock[0];
+            break;
         }
+
         for (int i = 0; i < 2; i++)
         {
             for (int k = 0; k < 3; k++)
             {
                 field[i][4 + k] = *blockPaste;
                 blockPaste++;
+            }
+        }
+    }
+}
+
+void rowFull()
+{
+
+    int intRowFull = 0;
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int j = 0; j < WIDTH; j++)
+        {
+            if (field[i][j] == 2)
+            {
+                intRowFull++;
+            }
+        }
+        if (intRowFull == 12)
+        {
+            for (int k = i; k > 0; k--)
+            {
+                for (int j = 0; j < WIDTH; j++)
+                {
+                    field[k][j] = field[k - 1][j];
+                }
             }
         }
     }
