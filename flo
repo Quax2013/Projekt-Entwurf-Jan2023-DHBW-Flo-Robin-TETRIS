@@ -9,22 +9,21 @@ int main()
 }
 
 
-
 void createField()
 {
     system("cls");
     gotoxy(0,0);
     printf("   Tetris   \n");
-    for(int i = 0; i <= HEIGHT; i++)
+    for(int i = 0; i < HEIGHT; i++)
     {
         printf("|");
-        for(int j = 0; j <= WIDTH; j++)
+        for(int j = 0; j < WIDTH; j++)
         {
             printf(" ");
         }
         printf("|\n");
     }
-    for(int i = 0; i <= WIDTH; i++)
+    for(int i = 0; i < WIDTH + 2; i++)
     {
         printf("-");
     }
