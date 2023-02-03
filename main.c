@@ -8,30 +8,55 @@
 #define MOVING 1
 #define SOLID 2
 
-
-#define HEIGHT 18
+#define HEIGHT 18 + 2
 #define WIDTH 10
 
 int field[HEIGHT][WIDTH] = {};
 
+int square[2][2] = {1, 1,
+                    1, 1};
+
+int leftL[2][3] = {1, 0, 0,
+                   1, 1, 1};
+
+int rightL[2][3] = {1, 1, 1,
+                    1, 0, 0};
+
+int leftS[2][3] = {0, 1, 1,
+                   1, 1, 0};
+
+int rightS[2][3] = {1, 1, 0,
+                    0, 1, 1};
+
+int tBlock[2][3] = {0, 1, 0,
+                    1, 1, 1};
+
+int lineBlock[1][4] = {1, 1, 1, 1};
 
 void gotoxy(int x, int y);
+void createField();
+void spawnBlock();
 
 int main()
 {
-    char stop = "";
 
-        int i = 0;
-        system("cls");
-        //gotoxy(20 + i, 1);
-        int a = 8;
-        for (int i = 0; i < HEIGHT; i++){
-            for (int k = 0; k< WIDTH; k++){
-                printf("%d", field[i][k]);
-            }
-            printf("\n");
+    srand(time(0));
+
+    int i = 0;
+    system("cls");
+    // gotoxy(20 + i, 1);
+
+    spawnBlock();
+    //createField();
+
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            printf("%d", field[i][k]);
         }
-
+        printf("\n");
+    }
 
     getche();
     return 0;
@@ -43,4 +68,77 @@ void gotoxy(int x, int y)
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD position = {x, y};
     SetConsoleCursorPosition(h, position);
+}
+
+void createField()
+{
+    system("cls");
+    gotoxy(0, 0);
+    printf("   Tetris   \n");
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        printf("|");
+        for (int j = 0; j < WIDTH; j++)
+        {
+            printf(" ");
+        }
+        printf("|\n");
+    }
+    for (int i = 0; i < WIDTH; i++)
+    {
+        printf("-");
+    }
+}
+
+void spawnBlock()
+{
+    int block = rand() % 7;
+    int *blockPaste;
+
+    printf("%d\n\n", block);
+    if (block == 0)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            for (int k = 0; k < 2; k++)
+            {
+                field[i][4 + k] = square[i][k];
+            }
+        }
+    }
+    else if (block == 6)
+    {
+        for (int k = 0; k < 4; k++)
+        {
+            field[1][3 + k] = lineBlock[0][k];
+        }
+    }
+    else
+    {
+        switch (block){
+            case 1:
+                blockPaste = &leftL[0];
+                break;
+            case 2:
+                blockPaste = &rightL[0];
+                break;
+            case 3:
+                blockPaste = &leftS[0];
+                break;
+            case 4:
+                blockPaste = &rightS[0];
+                break;
+            case 5:
+                blockPaste = &tBlock[0];
+                break;
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                field[i][4 + k] = *blockPaste;
+                blockPaste++;
+            }
+        }
+    }
 }
