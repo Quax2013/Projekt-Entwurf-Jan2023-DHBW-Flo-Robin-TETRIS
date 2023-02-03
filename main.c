@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<conio.h>
 #include<windows.h>
-#include<timer.h>
+#include<time.h>
 
 
 int main()
