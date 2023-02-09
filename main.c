@@ -8,8 +8,8 @@
 #define MOVING 1
 #define SOLID 2
 
-#define HEIGHT 18 + 2
-#define WIDTH 10
+#define HEIGHT 18 + 2 + 1
+#define WIDTH 1 + 10 + 1
 
 int field[HEIGHT][WIDTH] = {};
 
@@ -17,6 +17,10 @@ void gotoxy(int x, int y);
 void createField();
 void spawnBlock();
 void rowFull();
+void moveBlockDown();
+void border();
+void moveBlockRight();
+void moveBlockLeft();
 
 int main()
 {
@@ -25,10 +29,18 @@ int main()
 
     int i = 0;
     system("cls");
-    // gotoxy(20 + i, 1);
-
+    //gotoxy(20 + i, 1);
+    border();
+    createField();
     spawnBlock();
-    // createField();
+    moveBlockRight();
+    moveBlockRight();
+    for (int i = 0; i< 20; i++)
+    {
+        moveBlockDown();
+    }
+    
+    
 
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -51,6 +63,19 @@ void gotoxy(int x, int y)
     SetConsoleCursorPosition(h, position);
 }
 
+void border()
+{
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        field[i][0] = 2;
+        field[i][WIDTH - 1] = 2;
+    }
+    for (int k = 0; k < WIDTH; k++)
+    {
+        field[HEIGHT-1][k] = 2;
+    }
+}
+
 void createField()
 {
     system("cls");
@@ -59,7 +84,7 @@ void createField()
     for (int i = 0; i < HEIGHT; i++)
     {
         printf("|");
-        for (int j = 0; j < WIDTH; j++)
+        for (int j = 0; j < WIDTH - 2; j++)
         {
             printf(" ");
         }
@@ -69,6 +94,7 @@ void createField()
     {
         printf("-");
     }
+    printf("\n");
 }
 
 void spawnBlock()
@@ -169,11 +195,123 @@ void rowFull()
                     field[k][j] = field[k - 1][j];
                 }
             }
-            for (int j = 0; j < WIDTH; j++)
-            {
-               field[0][j] = 0; 
-            }
         }
-        intRowFull = 0;
+    }
+}
+
+
+
+void moveBlockDown()
+{
+    int move = 1;
+    Sleep(10);
+    for (int i = HEIGHT - 1; i >= 0; i--)
+    {
+        for (int k = WIDTH - 1; k >= 0; k--)
+        {
+            if (field[i][k] == 1)
+            {
+                if (field[i+1][k] == 2)
+                {
+                    move = 0;
+                }
+            }
+            
+        }
+    }
+    if (move)
+    {
+        for (int i = HEIGHT - 1; i >= 0; i--)
+        {
+            for (int k = WIDTH - 1; k >= 0; k--)
+            {
+                if (field[i][k] == 1)
+                {
+                    field[i][k] = 0;
+                    field[i+1][k] = 1;
+                }
+            }
+            
+        }
+    } else
+    {
+        move=0;
+    }
+    
+}
+
+void moceBlockRight()
+{
+    int move = 1;
+    Sleep(10);
+    for (int i = HEIGHT - 1; i >= 0; i--)
+    {
+        for (int k = WIDTH - 1; k >= 0; k--)
+        {
+            if (field[i][k] == 1)
+            {
+                if (field[i][k + 1] == 2)
+                {
+                    move = 0;
+                }
+            }
+            
+        }
+    }
+    if (move)
+    {
+        for (int i = HEIGHT - 1; i >= 0; i--)
+        {
+            for (int k = WIDTH - 1; k >= 0; k--)
+            {
+                if (field[i][k] == 1)
+                {
+                    field[i][k] = 0;
+                    field[i][k + 1] = 1;
+                }
+            }
+            
+        }
+    } else
+    {
+        move=0;
+    }
+}
+
+void moveBlockLeft()
+{
+    int move = 1;
+    Sleep(10);
+    for (int i = HEIGHT - 1; i >= 0; i--)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            if (field[i][k] == 1)
+            {
+                if (field[i][k - 1] == 2)
+                {
+                    move = 0;
+                }
+            }
+            
+        }
+    }
+    if (move)
+    {
+        for (int i = HEIGHT - 1; i >= 0; i--)
+        {
+            for (int k = 0; k < WIDTH; k++)
+            {
+                if (field[i][k] == 1)
+                {
+                    field[i][k] = 0;
+                    field[i][k - 1] = 1;
+                }
+            }
+            
+        }
+    } else
+    {
+        move=0;
     }
 }
