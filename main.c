@@ -240,7 +240,7 @@ void moveBlockDown()
     
 }
 
-void moceBlockRight()
+void moveBlockRight()
 {
     int move = 1;
     Sleep(10);
