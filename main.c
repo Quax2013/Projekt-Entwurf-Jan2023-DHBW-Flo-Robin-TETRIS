@@ -8,33 +8,31 @@
 #define MOVING 1
 #define SOLID 2
 
-#define HEIGHT 18 + 2 + 1
+#define HEIGHT 2 + 18 + 1
 #define WIDTH 1 + 10 + 1
 
 int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-int spawnBlock();
+void spawnBlock();
 void rowFull();
 void moveBlockDown();
 void border();
 void moveBlockRight();
 void moveBlockLeft();
-void spinBlock(int block, int rot);
 
 int main()
 {
 
     srand(time(0));
-    int block = 0;
-    int rot = 0;
 
+    int i = 0;
     system("cls");
+    //gotoxy(20 + i, 1);
     border();
     createField();
-    block = spawnBlock();
-    printf("%d\n", block);
+    spawnBlock();
     moveBlockRight();
     moveBlockRight();
     for (int i = 0; i< 20; i++)
@@ -43,7 +41,7 @@ int main()
     }
     
     
-
+    gotoxy(0, 30);
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -99,7 +97,7 @@ void createField()
     printf("\n");
 }
 
-int spawnBlock()
+void spawnBlock()
 {
     // Verschiedene Blöcke
     int square[2][2] = {1, 1,
@@ -148,19 +146,19 @@ int spawnBlock()
         switch (block)
         {
         case 1:
-            blockPaste = leftL;
+            blockPaste = &leftL[0];
             break;
         case 2:
-            blockPaste = rightL;
+            blockPaste = &rightL[0];
             break;
         case 3:
-            blockPaste = leftS;
+            blockPaste = &leftS[0];
             break;
         case 4:
-            blockPaste = rightS;
+            blockPaste = &rightS[0];
             break;
         case 5:
-            blockPaste = tBlock;
+            blockPaste = &tBlock[0];
             break;
         }
 
@@ -173,7 +171,6 @@ int spawnBlock()
             }
         }
     }
-    return block;
 }
 
 void rowFull()
@@ -207,7 +204,7 @@ void rowFull()
 void moveBlockDown()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -232,13 +229,37 @@ void moveBlockDown()
                 {
                     field[i][k] = 0;
                     field[i+1][k] = 1;
+                    gotoxy(k, i + 1);
+                    printf(" ");
+                    gotoxy(k, i + 2);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
             
         }
     } else
     {
-        move=0;
+        for (int i = HEIGHT - 1; i >= 0; i--)
+        {
+            for (int k = WIDTH - 1; k >= 0; k--)
+            {
+                if (field[i][k] == 1)
+                {
+                    field[i][k] = 2;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k, i + 2);
+                    printf("%c", 254);
+
+                    gotoxy(0, 22);
+                }
+            }
+            
+        }
     }
     
 }
@@ -246,7 +267,7 @@ void moveBlockDown()
 void moveBlockRight()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -271,6 +292,14 @@ void moveBlockRight()
                 {
                     field[i][k] = 0;
                     field[i][k + 1] = 1;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k + 1, i + 1);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
             
@@ -284,7 +313,7 @@ void moveBlockRight()
 void moveBlockLeft()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -309,6 +338,14 @@ void moveBlockLeft()
                 {
                     field[i][k] = 0;
                     field[i][k - 1] = 1;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k - 1, i + 1);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
             
@@ -318,3 +355,5 @@ void moveBlockLeft()
         move=0;
     }
 }
+
+
