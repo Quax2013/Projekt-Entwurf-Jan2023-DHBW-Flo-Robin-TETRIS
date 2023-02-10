@@ -89,12 +89,14 @@ int field[HEIGHT][WIDTH] = {};
 void gotoxy(int x, int y);
 void createField();
 void spawnBlock();
-void rowFull();
+void rowFull(int* score);
 void moveBlockDown();
 void border();
 void moveBlockRight();
 void moveBlockLeft();
 int spinBlock(int block, int rot);
+void gameOver(int* ptrGameOver);
+void control();
 
 int main()
 {
@@ -107,12 +109,8 @@ int main()
     border();
     createField();
     spawnBlock();
-    moveBlockRight();
-    moveBlockRight();
-    for (int i = 0; i < 20; i++)
-    {
-        moveBlockDown();
-    }
+    control();
+    
     
     
     gotoxy(0, 30);
@@ -226,7 +224,7 @@ void spawnBlock()
     }
 }
 
-void rowFull()
+void rowFull(int* score)
 {
 
     int intRowFull = 0;
@@ -241,11 +239,22 @@ void rowFull()
         }
         if (intRowFull == 12)
         {
+            *score += 100;
             for (int k = i; k > 0; k--)
             {
                 for (int j = 0; j < WIDTH; j++)
                 {
                     field[k][j] = field[k - 1][j];
+
+                    gotoxy(j, k + 1);
+                    if (field[k][j] == 2)
+                    {
+                        printf("%c", 254);
+                    } else
+                    {
+                        printf(" ");
+                    }
+                    gotoxy(0, 22);
                 }
             }
         }
@@ -254,8 +263,8 @@ void rowFull()
 
 void moveBlockDown()
 {
+    int score = 0;
     int move = 1;
-    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -310,13 +319,13 @@ void moveBlockDown()
             }
             
         }
+        spawnBlock();
     }
 }
 
 void moveBlockRight()
 {
     int move = 1;
-    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -361,7 +370,6 @@ void moveBlockRight()
 void moveBlockLeft()
 {
     int move = 1;
-    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -430,6 +438,79 @@ int spinBlock(int block, int rot)  //NOCH NICHT FERTIG!!!
                     }
                     break;
             }
+        }
+    }
+}
+
+void gameOver(int* ptrGameOver)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (
+            int k = 1; k < WIDTH; k++)
+        {
+            if (field[i][k] == 2)
+            {
+                int* ptrGameOver = 1;
+            }
+        }
+    }
+}
+
+
+void control()
+{
+    char temp = 'k';
+    int gameOver = 0;
+
+    while(gameOver != 1)
+    {
+        
+        for (int i = 0; i < 4; i++)
+        {
+            Sleep(250);
+            temp = "k";
+            if(kbhit())
+            {
+                temp = getch();
+                fflush(stdin);
+            }
+            if (temp == 'w')
+            {
+                
+            } else if (temp == 'a')
+            {
+                moveBlockLeft();
+            } else if (temp == 's')
+            {
+                
+            } else if (temp == 'd')
+            {
+                moveBlockRight();
+            } else if (temp == 'f')
+            {
+            gameOver = 1;
+            i = 4;
+            }
+           
+
+        }
+         moveBlockDown();
+
+
+        
+        
+        Sleep(75);
+        if(kbhit())
+        {
+            temp = getch();
+        }
+        if (temp == "w" || temp == "a" || temp == "s" || temp == "d")
+        {
+
+        } else if (temp == "f")
+        {
+            gameOver = 1;
         }
     }
 }
