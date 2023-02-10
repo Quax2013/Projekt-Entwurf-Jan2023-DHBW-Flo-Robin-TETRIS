@@ -8,6 +8,79 @@
 #define MOVING 1
 #define SOLID 2
 
+// Verschiedene Blöcke:
+int square[2][2] = {1, 1,
+                    1, 1};
+
+// Linkes L
+int leftL0[2][3] = {1, 0, 0,
+                    1, 1, 1};
+
+int leftL1[3][2] = {1, 1,
+                    1, 0,
+                    1, 0};
+
+int leftL2[2][3] = {1, 1, 1,
+                    0, 0, 1};
+
+int leftL3[3][2] = {0, 1,
+                    0, 1,
+                    1, 1};
+
+// Rechtes L
+int rightL0[2][3] = {1, 1, 1,
+                     1, 0, 0};
+
+int rightL1[3][2] = {1, 1,
+                     0, 1,
+                     0, 1};
+
+int rightL2[2][3] = {0, 0, 1,
+                     1, 1, 1};
+
+int rightL3[3][2] = {1, 0,
+                     1, 0,
+                     1, 1};
+
+// Linkes S
+int leftS0[2][3] = {0, 1, 1,
+                    1, 1, 0};
+
+int leftS1[3][2] = {1, 0,
+                    1, 1,
+                    0, 1};
+
+// Rechtes S
+int rightS0[2][3] = {1, 1, 0,
+                     0, 1, 1};
+
+int rightS1[3][2] = {0, 1,
+                     1, 1,
+                     1, 0};
+
+// T-Block
+int tBlock0[2][3] = {0, 1, 0,
+                     1, 1, 1};
+
+int tBlock1[3][2] = {1, 0,
+                     1, 1,
+                     1, 0};
+
+int tBlock2[2][3] = {1, 1, 1,
+                     0, 1, 0};
+
+int tBlock3[3][2] = {0, 1,
+                     1, 1,
+                     0, 1};
+
+// Line
+int lineBlock0[1][4] = {1, 1, 1, 1};
+
+int lineBlock1[4][1] = {1,
+                        1,
+                        1,
+                        1};
+
 #define HEIGHT 18 + 2 + 1
 #define WIDTH 1 + 10 + 1
 
@@ -21,7 +94,7 @@ void moveBlockDown();
 void border();
 void moveBlockRight();
 void moveBlockLeft();
-void spinBlock(int block, int rot);
+int spinBlock(int block, int rot);
 
 int main()
 {
@@ -37,12 +110,10 @@ int main()
     printf("%d\n", block);
     moveBlockRight();
     moveBlockRight();
-    for (int i = 0; i< 20; i++)
+    for (int i = 0; i < 20; i++)
     {
         moveBlockDown();
     }
-    
-    
 
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -74,7 +145,7 @@ void border()
     }
     for (int k = 0; k < WIDTH; k++)
     {
-        field[HEIGHT-1][k] = 2;
+        field[HEIGHT - 1][k] = 2;
     }
 }
 
@@ -101,27 +172,6 @@ void createField()
 
 int spawnBlock()
 {
-    // Verschiedene Blöcke
-    int square[2][2] = {1, 1,
-                        1, 1};
-
-    int leftL[2][3] = {1, 0, 0,
-                       1, 1, 1};
-
-    int rightL[2][3] = {1, 1, 1,
-                        1, 0, 0};
-
-    int leftS[2][3] = {0, 1, 1,
-                       1, 1, 0};
-
-    int rightS[2][3] = {1, 1, 0,
-                        0, 1, 1};
-
-    int tBlock[2][3] = {0, 1, 0,
-                        1, 1, 1};
-
-    int lineBlock[1][4] = {1, 1, 1, 1};
-
     int block = rand() % 7;
     int *blockPaste;
 
@@ -140,7 +190,7 @@ int spawnBlock()
     {
         for (int k = 0; k < 4; k++)
         {
-            field[1][3 + k] = lineBlock[0][k];
+            field[1][3 + k] = lineBlock0[0][k];
         }
     }
     else
@@ -148,19 +198,19 @@ int spawnBlock()
         switch (block)
         {
         case 1:
-            blockPaste = leftL;
+            blockPaste = leftL0;
             break;
         case 2:
-            blockPaste = rightL;
+            blockPaste = rightL0;
             break;
         case 3:
-            blockPaste = leftS;
+            blockPaste = leftS0;
             break;
         case 4:
-            blockPaste = rightS;
+            blockPaste = rightS0;
             break;
         case 5:
-            blockPaste = tBlock;
+            blockPaste = tBlock0;
             break;
         }
 
@@ -202,8 +252,6 @@ void rowFull()
     }
 }
 
-
-
 void moveBlockDown()
 {
     int move = 1;
@@ -214,12 +262,11 @@ void moveBlockDown()
         {
             if (field[i][k] == 1)
             {
-                if (field[i+1][k] == 2)
+                if (field[i + 1][k] == 2)
                 {
                     move = 0;
                 }
             }
-            
         }
     }
     if (move)
@@ -231,16 +278,15 @@ void moveBlockDown()
                 if (field[i][k] == 1)
                 {
                     field[i][k] = 0;
-                    field[i+1][k] = 1;
+                    field[i + 1][k] = 1;
                 }
             }
-            
         }
-    } else
-    {
-        move=0;
     }
-    
+    else
+    {
+        move = 0;
+    }
 }
 
 void moveBlockRight()
@@ -258,7 +304,6 @@ void moveBlockRight()
                     move = 0;
                 }
             }
-            
         }
     }
     if (move)
@@ -273,11 +318,11 @@ void moveBlockRight()
                     field[i][k + 1] = 1;
                 }
             }
-            
         }
-    } else
+    }
+    else
     {
-        move=0;
+        move = 0;
     }
 }
 
@@ -296,7 +341,6 @@ void moveBlockLeft()
                     move = 0;
                 }
             }
-            
         }
     }
     if (move)
@@ -311,10 +355,39 @@ void moveBlockLeft()
                     field[i][k - 1] = 1;
                 }
             }
-            
         }
-    } else
+    }
+    else
     {
-        move=0;
+        move = 0;
+    }
+}
+
+int spinBlock(int block, int rot)  //NOCH NICHT FERTIG!!!
+{
+    int testField[HEIGHT][WIDTH] = {};
+
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            testField[i][k] = field[i][k];
+        }
+    }
+
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            switch (block){
+                case 1:
+                    switch (rot){
+                        case 0:
+                            
+                            break;
+                    }
+                    break;
+            }
+        }
     }
 }
