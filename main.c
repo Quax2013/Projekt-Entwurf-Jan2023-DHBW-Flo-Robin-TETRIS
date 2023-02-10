@@ -4,28 +4,24 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define EMPTY 254
-#define MOVING 1
-#define SOLID 2
-
 // Verschiedene Blöcke:
 int square[2][2] = {1, 1,
                     1, 1};
 
 // Linkes L
-int leftL0[2][3] = {1, 0, 0,
-                    1, 1, 1};
-
-int leftL1[3][2] = {1, 1,
-                    1, 0,
-                    1, 0};
-
-int leftL2[2][3] = {1, 1, 1,
+int leftL0[2][3] = {1, 1, 1,
                     0, 0, 1};
 
-int leftL3[3][2] = {0, 1,
+int leftL1[3][2] = {0, 1,
                     0, 1,
                     1, 1};
+
+int leftL2[2][3] = {1, 0, 0,
+                    1, 1, 1};
+
+int leftL3[3][2] = {1, 1,
+                    1, 0,
+                    1, 0};
 
 // Rechtes L
 int rightL0[2][3] = {1, 1, 1,
@@ -81,8 +77,8 @@ int lineBlock1[4][1] = {1,
                         1,
                         1};
 
-#define HEIGHT 18 + 2 + 1
-#define WIDTH 1 + 10 + 1
+#define HEIGHT 18 + 4 + 1
+#define WIDTH 2 + 10 + 2
 
 int field[HEIGHT][WIDTH] = {};
 
@@ -94,7 +90,7 @@ void moveBlockDown();
 void border();
 void moveBlockRight();
 void moveBlockLeft();
-int spinBlock(int block, int rot);
+int spinBlock(int block, int rot, int offset);
 
 int main()
 {
@@ -103,7 +99,7 @@ int main()
 
     int i = 0;
     system("cls");
-    //gotoxy(20 + i, 1);
+    // gotoxy(20 + i, 1);
     border();
     createField();
     spawnBlock();
@@ -113,8 +109,7 @@ int main()
     {
         moveBlockDown();
     }
-    
-    
+
     gotoxy(0, 30);
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -142,7 +137,9 @@ void border()
     for (int i = 0; i < HEIGHT; i++)
     {
         field[i][0] = 2;
+        field[i][1] = 2;
         field[i][WIDTH - 1] = 2;
+        field[i][WIDTH - 2] = 2;
     }
     for (int k = 0; k < WIDTH; k++)
     {
@@ -179,7 +176,7 @@ void spawnBlock()
     printf("%d\n\n", block);
     if (block == 0)
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 2; i < 4; i++)
         {
             for (int k = 0; k < 2; k++)
             {
@@ -191,7 +188,7 @@ void spawnBlock()
     {
         for (int k = 0; k < 4; k++)
         {
-            field[1][3 + k] = lineBlock0[0][k];
+            field[3][3 + k] = lineBlock0[0][k];
         }
     }
     else
@@ -215,7 +212,7 @@ void spawnBlock()
             break;
         }
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 2; i < 4; i++)
         {
             for (int k = 0; k < 3; k++)
             {
@@ -278,7 +275,7 @@ void moveBlockDown()
                 if (field[i][k] == 1)
                 {
                     field[i][k] = 0;
-                    field[i+1][k] = 1;
+                    field[i + 1][k] = 1;
                     gotoxy(k, i + 1);
                     printf(" ");
                     gotoxy(k, i + 2);
@@ -308,7 +305,6 @@ void moveBlockDown()
                     gotoxy(0, 22);
                 }
             }
-            
         }
     }
 }
@@ -403,32 +399,264 @@ void moveBlockLeft()
     }
 }
 
-
-
-int spinBlock(int block, int rot)  //NOCH NICHT FERTIG!!!
+int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
 {
     int testField[HEIGHT][WIDTH] = {};
+    int safeX = 0;
+    int safeY = 0;
+    int newRot = 0;
 
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
         {
-            testField[i][k] = field[i][k];
+            if (field[i][k] == 1)
+            {
+                safeX = k;
+                safeY = i;
+                testField[i][k] = 0;
+            }
+            else
+            {
+                testField[i][k] = field[i][k];
+            }
         }
     }
 
+    switch (block)
+    {
+    case 0: // Quadrat
+        for (int i = 0; i < 2; i++)
+        {
+            for (int k = 0; k < 2; k++)
+            {
+                testField[safeY - 1 + i][safeX - 1 + k] = 1;
+            }
+        }
+        break;
+    case 1: // Linkes L
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 2 + k] = testField[safeY - 2 + i][safeX - 2 + k] + leftL1[i][k];
+                }
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + leftL2[i][k];
+                }
+            }
+            newRot = 2;
+            break;
+        case 2:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + leftL3[i][k];
+                }
+            }
+            newRot = 3;
+            break;
+        case 3:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + leftL0[i][k];
+                }
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    case 2: // Rechtes L
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX + k] = testField[safeY - 2 + i][safeX + k] + rightL1[i][k];
+                }
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightL2[i][k];
+                }
+            }
+            newRot = 2;
+            break;
+        case 2:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightL3[i][k];
+                }
+            }
+            newRot = 3;
+            break;
+        case 3:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 2 + k] = testField[safeY - 1 + i][safeX - 2 + k] + rightL0[i][k];
+                }
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    case 3: // Linkes S
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX + k] = testField[safeY - 2 + i][safeX + k] + leftS1[i][k];
+                }
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 2 + k] = testField[safeY - 1 + i][safeX - 2 + k] + leftS0[i][k];
+                }
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    case 4: // Rechtes S
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightS1[i][k];
+                }
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightS0[i][k];
+                }
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    case 5: // T-Block
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + tBlock1[i][k];
+                }
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + tBlock2[i][k];
+                }
+            }
+            newRot = 2;
+            break;
+        case 2:
+            for (int i = 0; i < 3; i++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightL3[i][k];
+                }
+            }
+            newRot = 3;
+            break;
+        case 3:
+            for (int i = 0; i < 2; i++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightL0[i][k];
+                }
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    case 6: // Linien-Block
+        switch (rot)
+        {
+        case 0:
+            for (int i = 0; i < 4; i++)
+            {
+                testField[safeY - 3 + i][safeX - 1] = testField[safeY - 3 + i][safeX - 1] + 1;
+            }
+            newRot = 1;
+            break;
+        case 1:
+            for (int i = 0; i < 4; i++)
+            {
+                testField[safeY][safeX - 2 + i] = testField[safeY][safeX - 2 + i] + 1;
+            }
+            newRot = 0;
+            break;
+        }
+        break;
+    }
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
         {
-            switch (block){
-                case 1:
-                    switch (rot){
-                        case 0:
-                            
-                            break;
+            if (testField[i][k] == 3)
+            {
+                return rot;
+            }
+            else
+            {
+                for (int j = 0; j < HEIGHT; j++)
+                {
+                    for (int l = 0; l < WIDTH; l++)
+                    {
+                        field[j][l] == testField[j][l];
+                        return newRot;
                     }
-                    break;
+                }
             }
         }
     }
