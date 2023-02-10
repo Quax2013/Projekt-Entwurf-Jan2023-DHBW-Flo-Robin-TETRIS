@@ -88,7 +88,7 @@ int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-int spawnBlock();
+void spawnBlock();
 void rowFull();
 void moveBlockDown();
 void border();
@@ -100,21 +100,22 @@ int main()
 {
 
     srand(time(0));
-    int block = 0;
-    int rot = 0;
 
+    int i = 0;
     system("cls");
+    //gotoxy(20 + i, 1);
     border();
     createField();
-    block = spawnBlock();
-    printf("%d\n", block);
+    spawnBlock();
     moveBlockRight();
     moveBlockRight();
     for (int i = 0; i < 20; i++)
     {
         moveBlockDown();
     }
-
+    
+    
+    gotoxy(0, 30);
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -170,7 +171,7 @@ void createField()
     printf("\n");
 }
 
-int spawnBlock()
+void spawnBlock()
 {
     int block = rand() % 7;
     int *blockPaste;
@@ -223,7 +224,6 @@ int spawnBlock()
             }
         }
     }
-    return block;
 }
 
 void rowFull()
@@ -255,7 +255,7 @@ void rowFull()
 void moveBlockDown()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -278,21 +278,45 @@ void moveBlockDown()
                 if (field[i][k] == 1)
                 {
                     field[i][k] = 0;
-                    field[i + 1][k] = 1;
+                    field[i+1][k] = 1;
+                    gotoxy(k, i + 1);
+                    printf(" ");
+                    gotoxy(k, i + 2);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
         }
     }
     else
     {
-        move = 0;
+        for (int i = HEIGHT - 1; i >= 0; i--)
+        {
+            for (int k = WIDTH - 1; k >= 0; k--)
+            {
+                if (field[i][k] == 1)
+                {
+                    field[i][k] = 2;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k, i + 2);
+                    printf("%c", 254);
+
+                    gotoxy(0, 22);
+                }
+            }
+            
+        }
     }
 }
 
 void moveBlockRight()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -316,6 +340,14 @@ void moveBlockRight()
                 {
                     field[i][k] = 0;
                     field[i][k + 1] = 1;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k + 1, i + 1);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
         }
@@ -329,7 +361,7 @@ void moveBlockRight()
 void moveBlockLeft()
 {
     int move = 1;
-    Sleep(10);
+    Sleep(100);
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -353,6 +385,14 @@ void moveBlockLeft()
                 {
                     field[i][k] = 0;
                     field[i][k - 1] = 1;
+
+                    gotoxy(k, i + 1);
+                    printf(" ");
+
+                    gotoxy(k - 1, i + 1);
+                    printf("+");
+
+                    gotoxy(0, 22);
                 }
             }
         }
@@ -362,6 +402,8 @@ void moveBlockLeft()
         move = 0;
     }
 }
+
+
 
 int spinBlock(int block, int rot)  //NOCH NICHT FERTIG!!!
 {
