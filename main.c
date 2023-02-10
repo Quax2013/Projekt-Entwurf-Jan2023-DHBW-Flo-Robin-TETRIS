@@ -15,24 +15,26 @@ int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-void spawnBlock();
+int spawnBlock();
 void rowFull();
 void moveBlockDown();
 void border();
 void moveBlockRight();
 void moveBlockLeft();
+void spinBlock(int block, int rot);
 
 int main()
 {
 
     srand(time(0));
+    int block = 0;
+    int rot = 0;
 
-    int i = 0;
     system("cls");
-    //gotoxy(20 + i, 1);
     border();
     createField();
-    spawnBlock();
+    block = spawnBlock();
+    printf("%d\n", block);
     moveBlockRight();
     moveBlockRight();
     for (int i = 0; i< 20; i++)
@@ -97,7 +99,7 @@ void createField()
     printf("\n");
 }
 
-void spawnBlock()
+int spawnBlock()
 {
     // Verschiedene Blöcke
     int square[2][2] = {1, 1,
@@ -146,19 +148,19 @@ void spawnBlock()
         switch (block)
         {
         case 1:
-            blockPaste = &leftL[0];
+            blockPaste = leftL;
             break;
         case 2:
-            blockPaste = &rightL[0];
+            blockPaste = rightL;
             break;
         case 3:
-            blockPaste = &leftS[0];
+            blockPaste = leftS;
             break;
         case 4:
-            blockPaste = &rightS[0];
+            blockPaste = rightS;
             break;
         case 5:
-            blockPaste = &tBlock[0];
+            blockPaste = tBlock;
             break;
         }
 
@@ -171,6 +173,7 @@ void spawnBlock()
             }
         }
     }
+    return block;
 }
 
 void rowFull()
