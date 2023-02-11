@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Verschiedene Blöcke:
 int square[2][2] = {1, 1,
@@ -84,7 +85,7 @@ int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-void drawField(int score);
+void drawField(int score, char *highscoreName, int highscore);
 int spawnBlock();
 void rowFull(int *score);
 void moveBlockDown(int *block, int *rot, int *score, int forced);
@@ -93,7 +94,7 @@ void moveBlockRight();
 void moveBlockLeft();
 int spinBlock(int block, int rot, int offset, int depth);
 void gameOverTest(int *ptrGameOver);
-void control(int *block, int *rot, int *score);
+void control(int *block, int *rot, int *score, char *highscoreName, int highscore);
 
 int main()
 {
@@ -102,14 +103,49 @@ int main()
     int block = 0;
     int rotation = 0;
     int score = 0;
+    char highscoreName[11] = "";
+    int highscore = 0;
+
+    FILE *fp = fopen("./scoreFile.txt", "r");
+    if (fp == NULL)
+    {
+        strcpy(highscoreName, "NONE");
+        highscore = 0;
+    }
+    else
+    {
+        fscanf(fp, "%s\n%d", highscoreName, &highscore);
+    }
+    fclose(fp);
 
     system("cls");
     border();
     // createField();
     block = spawnBlock();
-    control(&block, &rotation, &score);
+    control(&block, &rotation, &score, highscoreName, highscore);
+
+    if (highscore < score)
+    {
+        printf("Please enter your name(10 characters max):\n");
+        for (int i = 0; i < 10; i++){
+            highscoreName[i] = getchar();
+        }
+        highscoreName[10] = '\0';
+
+        FILE *fp = fopen("./scoreFile.txt", "w");
+        if (fp == NULL)
+        {
+            fprintf(stderr, "Unable to save highscore.");
+        }
+        else
+        {
+            fprintf(fp, "%s\n%d", highscoreName, score);
+        }
+        fclose(fp);
+    }
 
     gotoxy(0, 30);
+    printf("Press any key to close.");
     getche();
     return 0;
 }
@@ -158,7 +194,7 @@ void createField()
     printf("\n");
 }
 
-void drawField(int score)
+void drawField(int score, char *highscoreName, int highscore)
 {
     system("cls");
     for (int i = 0; i < HEIGHT; i++)
@@ -182,7 +218,7 @@ void drawField(int score)
         printf("\n");
     }
 
-    printf("\nScore: %d", score);
+    printf("\nScore: %d\nHighscore:%s | %d", score, highscoreName, highscore);
 }
 
 int spawnBlock()
@@ -764,7 +800,7 @@ void gameOverTest(int *ptrGameOver)
     }
 }
 
-void control(int *block, int *rot, int *score)
+void control(int *block, int *rot, int *score, char *highscoreName, int highscore)
 {
     char temp = 'k';
     int gameOver = 0;
@@ -785,24 +821,24 @@ void control(int *block, int *rot, int *score)
             if (temp == 'w')
             {
                 *rot = spinBlock(*block, *rot, 0, 0);
-                drawField(*score);
+                drawField(*score, highscoreName, highscore);
             }
             else if (temp == 'a')
             {
                 moveBlockLeft();
-                drawField(*score);
+                drawField(*score, highscoreName, highscore);
             }
             else if (temp == 's')
             {
                 moveBlockDown(block, rot, score, 1);
                 rowFull(score);
-                drawField(*score);
+                drawField(*score, highscoreName, highscore);
                 i = 0;
             }
             else if (temp == 'd')
             {
                 moveBlockRight();
-                drawField(*score);
+                drawField(*score, highscoreName, highscore);
             }
             else if (temp == 'f')
             {
@@ -813,7 +849,7 @@ void control(int *block, int *rot, int *score)
         moveBlockDown(block, rot, score, 0);
         rowFull(score);
         gameOverTest(&gameOver);
-        drawField(*score);
+        drawField(*score, highscoreName, highscore);
 
         if (gameOver)
         {
