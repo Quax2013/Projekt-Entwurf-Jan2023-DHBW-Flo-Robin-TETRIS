@@ -84,10 +84,10 @@ int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-void drawField();
+void drawField(int score);
 int spawnBlock();
 void rowFull(int *score);
-void moveBlockDown(int *block, int *rot);
+void moveBlockDown(int *block, int *rot, int *score, int forced);
 void border();
 void moveBlockRight();
 void moveBlockLeft();
@@ -110,15 +110,6 @@ int main()
     control(&block, &rotation, &score);
 
     gotoxy(0, 30);
-    for (int i = 0; i < HEIGHT; i++)
-    {
-        for (int k = 0; k < WIDTH; k++)
-        {
-            printf("%d", field[i][k]);
-        }
-        printf("\n");
-    }
-
     getche();
     return 0;
 }
@@ -167,14 +158,14 @@ void createField()
     printf("\n");
 }
 
-void drawField()
+void drawField(int score)
 {
     system("cls");
     for (int i = 0; i < HEIGHT; i++)
     {
-        for (int k = 0; k < WIDTH; k++)
+        for (int k = 1; k < WIDTH - 1; k++)
         {
-            /*switch (field[i][k])
+            switch (field[i][k])
             {
             case 0:
                 printf(" ");
@@ -185,11 +176,13 @@ void drawField()
             case 2:
                 printf("%c", 254);
                 break;
-            }*/
-            printf("%d", field[i][k]);
+            }
+            // printf("%d", field[i][k]); // DEBUG
         }
         printf("\n");
     }
+
+    printf("\nScore: %d", score);
 }
 
 int spawnBlock()
@@ -250,9 +243,10 @@ int spawnBlock()
 
 void rowFull(int *score)
 {
-
     int intRowFull = 0;
-    for (int i = 0; i < HEIGHT; i++)
+    int fullRows = 0;
+
+    for (int i = 0; i < HEIGHT - 1; i++)
     {
         for (int j = 0; j < WIDTH; j++)
         {
@@ -263,10 +257,10 @@ void rowFull(int *score)
         }
         if (intRowFull == 14)
         {
-            *score += 100;
+            fullRows++;
             for (int k = i; k > 0; k--)
             {
-                for (int j = 0; j < WIDTH; j++)
+                for (int j = 2; j < WIDTH - 2; j++)
                 {
                     field[k][j] = field[k - 1][j];
 
@@ -283,10 +277,15 @@ void rowFull(int *score)
                 }
             }
         }
+        intRowFull = 0;
+    }
+    if (fullRows)
+    {
+        *score += 150 + 100 * (fullRows * fullRows / 2.0 - 1);
     }
 }
 
-void moveBlockDown(int *block, int *rot)
+void moveBlockDown(int *block, int *rot, int *score, int forced)
 {
     int move = 1;
 
@@ -313,12 +312,12 @@ void moveBlockDown(int *block, int *rot)
                 {
                     field[i][k] = 0;
                     field[i + 1][k] = 1;
-                    gotoxy(k, i + 1);
+                    /*gotoxy(k, i + 1);
                     printf(" ");
                     gotoxy(k, i + 2);
                     printf("+");
 
-                    gotoxy(0, 22);
+                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -333,18 +332,22 @@ void moveBlockDown(int *block, int *rot)
                 {
                     field[i][k] = 2;
 
-                    gotoxy(k, i + 1);
+                    /*gotoxy(k, i + 1);
                     printf(" ");
 
                     gotoxy(k, i + 2);
                     printf("%c", 254);
 
-                    gotoxy(0, 22);
+                    gotoxy(0, 22);*/
                 }
             }
         }
         *block = spawnBlock();
         *rot = 0;
+    }
+    if (forced)
+    {
+        *score += 2;
     }
 }
 
@@ -375,13 +378,13 @@ void moveBlockRight()
                     field[i][k] = 0;
                     field[i][k + 1] = 1;
 
-                    gotoxy(k, i + 1);
+                    /*gotoxy(k, i + 1);
                     printf(" ");
 
                     gotoxy(k + 1, i + 1);
                     printf("+");
 
-                    gotoxy(0, 22);
+                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -419,13 +422,13 @@ void moveBlockLeft()
                     field[i][k] = 0;
                     field[i][k - 1] = 1;
 
-                    gotoxy(k, i + 1);
+                    /*gotoxy(k, i + 1);
                     printf(" ");
 
                     gotoxy(k - 1, i + 1);
                     printf("+");
 
-                    gotoxy(0, 22);
+                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -782,23 +785,24 @@ void control(int *block, int *rot, int *score)
             if (temp == 'w')
             {
                 *rot = spinBlock(*block, *rot, 0, 0);
-                drawField();
+                drawField(*score);
             }
             else if (temp == 'a')
             {
                 moveBlockLeft();
-                drawField();
+                drawField(*score);
             }
             else if (temp == 's')
             {
-                moveBlockDown(block, rot);
-                drawField();
+                moveBlockDown(block, rot, score, 1);
+                rowFull(score);
+                drawField(*score);
                 i = 0;
             }
             else if (temp == 'd')
             {
                 moveBlockRight();
-                drawField();
+                drawField(*score);
             }
             else if (temp == 'f')
             {
@@ -806,16 +810,16 @@ void control(int *block, int *rot, int *score)
                 i = 4;
             }
         }
-        moveBlockDown(block, rot);
+        moveBlockDown(block, rot, score, 0);
         rowFull(score);
         gameOverTest(&gameOver);
-        drawField();
+        drawField(*score);
 
         if (gameOver)
         {
             printf("\nGAMEOVER\n");
         }
-        /*Sleep(75);
+        /*Sleep(75);            Wozu ist das? @Flo
         fflush(stdin);
         if (kbhit())
         {
