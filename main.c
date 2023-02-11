@@ -84,31 +84,31 @@ int field[HEIGHT][WIDTH] = {};
 
 void gotoxy(int x, int y);
 void createField();
-void spawnBlock();
-void rowFull(int* score);
-void moveBlockDown();
+void drawField();
+int spawnBlock();
+void rowFull(int *score);
+void moveBlockDown(int *block);
 void border();
 void moveBlockRight();
 void moveBlockLeft();
-int spinBlock(int block, int rot);
-void gameOver(int* ptrGameOver);
-void control();
+int spinBlock(int block, int rot, int offset);
+void gameOverTest(int *ptrGameOver);
+void control(int *block, int *rot, int *score);
 
 int main()
 {
 
     srand(time(0));
+    int block = 0;
+    int rotation = 0;
+    int score = 0;
 
-    int i = 0;
     system("cls");
-    // gotoxy(20 + i, 1);
     border();
-    createField();
-    spawnBlock();
-    control();
-    
-    
-    
+    // createField();
+    block = spawnBlock();
+    control(&block, &rotation, &score);
+
     gotoxy(0, 30);
     for (int i = 0; i < HEIGHT; i++)
     {
@@ -167,7 +167,32 @@ void createField()
     printf("\n");
 }
 
-void spawnBlock()
+void drawField()
+{
+    system("cls");
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            /*switch (field[i][k])
+            {
+            case 0:
+                printf(" ");
+                break;
+            case 1:
+                printf("+");
+                break;
+            case 2:
+                printf("%c", 254);
+                break;
+            }*/
+            printf("%d", field[i][k]);
+        }
+        printf("\n");
+    }
+}
+
+int spawnBlock()
 {
     int block = rand() % 7;
     int *blockPaste;
@@ -175,11 +200,11 @@ void spawnBlock()
     printf("%d\n\n", block);
     if (block == 0)
     {
-        for (int i = 2; i < 4; i++)
+        for (int i = 0; i < 2; i++)
         {
             for (int k = 0; k < 2; k++)
             {
-                field[i][4 + k] = square[i][k];
+                field[2 + i][4 + k] = square[i][k];
             }
         }
     }
@@ -211,18 +236,19 @@ void spawnBlock()
             break;
         }
 
-        for (int i = 2; i < 4; i++)
+        for (int i = 0; i < 2; i++)
         {
             for (int k = 0; k < 3; k++)
             {
-                field[i][4 + k] = *blockPaste;
+                field[2 + i][4 + k] = *blockPaste;
                 blockPaste++;
             }
         }
     }
+    return block;
 }
 
-void rowFull(int* score)
+void rowFull(int *score)
 {
 
     int intRowFull = 0;
@@ -235,7 +261,7 @@ void rowFull(int* score)
                 intRowFull++;
             }
         }
-        if (intRowFull == 12)
+        if (intRowFull == 14)
         {
             *score += 100;
             for (int k = i; k > 0; k--)
@@ -248,7 +274,8 @@ void rowFull(int* score)
                     if (field[k][j] == 2)
                     {
                         printf("%c", 254);
-                    } else
+                    }
+                    else
                     {
                         printf(" ");
                     }
@@ -259,10 +286,10 @@ void rowFull(int* score)
     }
 }
 
-void moveBlockDown()
+void moveBlockDown(int *block)
 {
-    int score = 0;
     int move = 1;
+
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -316,7 +343,7 @@ void moveBlockDown()
                 }
             }
         }
-        spawnBlock();
+        *block = spawnBlock();
     }
 }
 
@@ -611,7 +638,7 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightL3[i][k];
+                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + tBlock3[i][k];
                 }
             }
             newRot = 3;
@@ -621,7 +648,7 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightL0[i][k];
+                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + tBlock0[i][k];
                 }
             }
             newRot = 0;
@@ -656,90 +683,90 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
             {
                 return rot;
             }
-            else
-            {
-                for (int j = 0; j < HEIGHT; j++)
-                {
-                    for (int l = 0; l < WIDTH; l++)
-                    {
-                        field[j][l] == testField[j][l];
-                        return newRot;
-                    }
-                }
-            }
-        } 
+        }
     }
+    for (int i = 0; i < HEIGHT; i++)
+    {
+        for (int k = 0; k < WIDTH; k++)
+        {
+            field[i][k] = testField[i][k];
+        }
+    }
+    return newRot;
 }
 
-void gameOver(int* ptrGameOver)
+void gameOverTest(int *ptrGameOver)
 {
     for (int i = 0; i < 4; i++)
     {
         for (
-            int k = 1; k < WIDTH; k++)
+            int k = 2; k < WIDTH - 2; k++)
         {
             if (field[i][k] == 2)
             {
-                int* ptrGameOver = 1;
+                *ptrGameOver = 1;
             }
         }
     }
 }
 
-
-void control() 
+void control(int *block, int *rot, int *score)
 {
     char temp = 'k';
     int gameOver = 0;
 
-    while(gameOver != 1)
+    while (gameOver != 1)
     {
-        
+
         for (int i = 0; i < 4; i++)
         {
             Sleep(250);
-            temp = "k";
-            if(kbhit())
+            temp = 'k';
+            if (kbhit())
             {
                 temp = getch();
                 fflush(stdin);
             }
             if (temp == 'w')
             {
-                
-            } else if (temp == 'a')
+                *rot = spinBlock(*block, *rot, 0);
+                drawField();
+            }
+            else if (temp == 'a')
             {
                 moveBlockLeft();
-            } else if (temp == 's')
+                drawField();
+            }
+            else if (temp == 's')
             {
-                
-            } else if (temp == 'd')
+                moveBlockDown(block);
+                drawField();
+            }
+            else if (temp == 'd')
             {
                 moveBlockRight();
-            } else if (temp == 'f')
-            {
-            gameOver = 1;
-            i = 4;
+                drawField();
             }
-           
-
+            else if (temp == 'f')
+            {
+                gameOver = 1;
+                i = 4;
+            }
         }
-         moveBlockDown();
+        moveBlockDown(block);
+        rowFull(score);
+        gameOverTest(&gameOver);
 
-
-        
-        
         Sleep(75);
-        if(kbhit())
+        if (kbhit())
         {
             temp = getch();
         }
-        if (temp == "w" || temp == "a" || temp == "s" || temp == "d")
-        {
-
-        } else if (temp == "f")
+        drawField();
+        if (temp == 'f')
         {
             gameOver = 1;
+            printf("\nGAMEOVER\n");
         }
     }
 }
