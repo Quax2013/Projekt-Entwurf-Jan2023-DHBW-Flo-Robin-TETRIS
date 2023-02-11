@@ -87,11 +87,11 @@ void createField();
 void drawField();
 int spawnBlock();
 void rowFull(int *score);
-void moveBlockDown(int *block);
+void moveBlockDown(int *block, int *rot);
 void border();
 void moveBlockRight();
 void moveBlockLeft();
-int spinBlock(int block, int rot, int offset);
+int spinBlock(int block, int rot, int offset, int depth);
 void gameOverTest(int *ptrGameOver);
 void control(int *block, int *rot, int *score);
 
@@ -270,7 +270,7 @@ void rowFull(int *score)
                 {
                     field[k][j] = field[k - 1][j];
 
-                    gotoxy(j, k + 1);
+                    /*gotoxy(j, k + 1);
                     if (field[k][j] == 2)
                     {
                         printf("%c", 254);
@@ -279,14 +279,14 @@ void rowFull(int *score)
                     {
                         printf(" ");
                     }
-                    gotoxy(0, 22);
+                    gotoxy(0, 22);*/
                 }
             }
         }
     }
 }
 
-void moveBlockDown(int *block)
+void moveBlockDown(int *block, int *rot)
 {
     int move = 1;
 
@@ -344,6 +344,7 @@ void moveBlockDown(int *block)
             }
         }
         *block = spawnBlock();
+        *rot = 0;
     }
 }
 
@@ -435,7 +436,7 @@ void moveBlockLeft()
     }
 }
 
-int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
+int spinBlock(int block, int rot, int offset, int depth)
 {
     int testField[HEIGHT][WIDTH] = {};
     int safeX = 0;
@@ -462,11 +463,13 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
     switch (block)
     {
     case 0: // Quadrat
+        safeX -= 1;
+        safeY -= 1;
         for (int i = 0; i < 2; i++)
         {
             for (int k = 0; k < 2; k++)
             {
-                testField[safeY - 1 + i][safeX - 1 + k] = 1;
+                testField[safeY + i][safeX + k] = 1;
             }
         }
         break;
@@ -474,41 +477,49 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeX -= 2;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 2 + k] = testField[safeY - 2 + i][safeX - 2 + k] + leftL1[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftL1[i][k];
                 }
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + leftL2[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftL2[i][k];
                 }
             }
             newRot = 2;
             break;
         case 2:
+            safeX -= 1;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + leftL3[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftL3[i][k];
                 }
             }
             newRot = 3;
             break;
         case 3:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + leftL0[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftL0[i][k];
                 }
             }
             newRot = 0;
@@ -519,41 +530,48 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX + k] = testField[safeY - 2 + i][safeX + k] + rightL1[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightL1[i][k];
                 }
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightL2[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightL2[i][k];
                 }
             }
             newRot = 2;
             break;
         case 2:
+            safeX -= 1;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightL3[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightL3[i][k];
                 }
             }
             newRot = 3;
             break;
         case 3:
+            safeX -= 2;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 2 + k] = testField[safeY - 1 + i][safeX - 2 + k] + rightL0[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightL0[i][k];
                 }
             }
             newRot = 0;
@@ -564,21 +582,24 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX + k] = testField[safeY - 2 + i][safeX + k] + leftS1[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftS1[i][k];
                 }
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 2;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 2 + k] = testField[safeY - 1 + i][safeX - 2 + k] + leftS0[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + leftS0[i][k];
                 }
             }
             newRot = 0;
@@ -589,21 +610,25 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeX -= 1;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + rightS1[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightS1[i][k];
                 }
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + rightS0[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + rightS0[i][k];
                 }
             }
             newRot = 0;
@@ -614,41 +639,49 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeX -= 1;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + tBlock1[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + tBlock1[i][k];
                 }
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + tBlock2[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + tBlock2[i][k];
                 }
             }
             newRot = 2;
             break;
         case 2:
+            safeX -= 1;
+            safeY -= 2;
             for (int i = 0; i < 3; i++)
             {
                 for (int k = 0; k < 2; k++)
                 {
-                    testField[safeY - 2 + i][safeX - 1 + k] = testField[safeY - 2 + i][safeX - 1 + k] + tBlock3[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + tBlock3[i][k];
                 }
             }
             newRot = 3;
             break;
         case 3:
+            safeX -= 1;
+            safeY -= 1;
             for (int i = 0; i < 2; i++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    testField[safeY - 1 + i][safeX - 1 + k] = testField[safeY - 1 + i][safeX - 1 + k] + tBlock0[i][k];
+                    testField[safeY + i][safeX + k + offset] = testField[safeY + i][safeX + k + offset] + tBlock0[i][k];
                 }
             }
             newRot = 0;
@@ -659,16 +692,19 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         switch (rot)
         {
         case 0:
+            safeX -= 1;
+            safeY -= 3;
             for (int i = 0; i < 4; i++)
             {
-                testField[safeY - 3 + i][safeX - 1] = testField[safeY - 3 + i][safeX - 1] + 1;
+                testField[safeY + i][safeX + offset] = testField[safeY + i][safeX + offset] + 1;
             }
             newRot = 1;
             break;
         case 1:
+            safeX -= 2;
             for (int i = 0; i < 4; i++)
             {
-                testField[safeY][safeX - 2 + i] = testField[safeY][safeX - 2 + i] + 1;
+                testField[safeY][safeX + i + offset] = testField[safeY][safeX + i + offset] + 1;
             }
             newRot = 0;
             break;
@@ -681,7 +717,22 @@ int spinBlock(int block, int rot, int offset) // NOCH NICHT FERTIG!!!
         {
             if (testField[i][k] == 3)
             {
-                return rot;
+                if (depth > 3)
+                {
+                    return rot;
+                }
+                if (block == 6 && rot == 1 && k == safeX && testField[i][k + 1] == 3)
+                {
+                    return spinBlock(block, rot, offset + 2, depth + 1);
+                }
+                else if (k > safeX)
+                {
+                    return spinBlock(block, rot, offset - 1, depth + 1);
+                }
+                else
+                {
+                    return spinBlock(block, rot, offset + 1, depth + 1);
+                }
             }
         }
     }
@@ -722,6 +773,7 @@ void control(int *block, int *rot, int *score)
         {
             Sleep(250);
             temp = 'k';
+            fflush(stdin);
             if (kbhit())
             {
                 temp = getch();
@@ -729,7 +781,7 @@ void control(int *block, int *rot, int *score)
             }
             if (temp == 'w')
             {
-                *rot = spinBlock(*block, *rot, 0);
+                *rot = spinBlock(*block, *rot, 0, 0);
                 drawField();
             }
             else if (temp == 'a')
@@ -739,8 +791,9 @@ void control(int *block, int *rot, int *score)
             }
             else if (temp == 's')
             {
-                moveBlockDown(block);
+                moveBlockDown(block, rot);
                 drawField();
+                i = 0;
             }
             else if (temp == 'd')
             {
@@ -753,20 +806,27 @@ void control(int *block, int *rot, int *score)
                 i = 4;
             }
         }
-        moveBlockDown(block);
+        moveBlockDown(block, rot);
         rowFull(score);
         gameOverTest(&gameOver);
+        drawField();
 
-        Sleep(75);
+        if (gameOver)
+        {
+            printf("\nGAMEOVER\n");
+        }
+        /*Sleep(75);
+        fflush(stdin);
         if (kbhit())
         {
             temp = getch();
+            fflush(stdin);
         }
         drawField();
         if (temp == 'f')
         {
             gameOver = 1;
             printf("\nGAMEOVER\n");
-        }
+        }*/
     }
 }
