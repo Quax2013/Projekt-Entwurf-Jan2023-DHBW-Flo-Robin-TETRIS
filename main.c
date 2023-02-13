@@ -232,7 +232,7 @@ int spawnBlock()
         {
             for (int k = 0; k < 2; k++)
             {
-                field[2 + i][4 + k] = square[i][k];
+                field[2 + i][6 + k] = square[i][k];
             }
         }
     }
@@ -240,7 +240,7 @@ int spawnBlock()
     {
         for (int k = 0; k < 4; k++)
         {
-            field[3][3 + k] = lineBlock0[0][k];
+            field[3][5 + k] = lineBlock0[0][k];
         }
     }
     else
@@ -268,7 +268,7 @@ int spawnBlock()
         {
             for (int k = 0; k < 3; k++)
             {
-                field[2 + i][4 + k] = *blockPaste;
+                field[2 + i][5 + k] = *blockPaste;
                 blockPaste++;
             }
         }
