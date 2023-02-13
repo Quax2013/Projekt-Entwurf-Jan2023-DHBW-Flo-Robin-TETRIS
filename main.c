@@ -70,7 +70,7 @@ int tBlock3[3][2] = {0, 1,
                      1, 1,
                      0, 1};
 
-// Line
+// Linie
 int lineBlock0[1][4] = {1, 1, 1, 1};
 
 int lineBlock1[4][1] = {1,
@@ -83,8 +83,6 @@ int lineBlock1[4][1] = {1,
 
 int field[HEIGHT][WIDTH] = {};
 
-void gotoxy(int x, int y);
-void createField();
 void drawField(int score, char *highscoreName, int highscore);
 int spawnBlock();
 void rowFull(int *score);
@@ -99,13 +97,13 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
 // Hauptfunktion in der das Spiel einmal durchgeführt wird.
 int main()
 {
-
-    srand(time(0));
     int block = 0;
     int rotation = 0;
     int score = 0;
     char highscoreName[11] = "";
     int highscore = 0;
+
+    srand(time(0));
 
     // Auslesen der Highscore-Daten
     FILE *fp = fopen("./scoreFile.txt", "r");
@@ -126,7 +124,7 @@ int main()
 
     // Ausgeben der Anleitung und warten auf Bereitschaft der Anwenders
     system("cls");
-    printf("Herzlich willkommen zu Tetris.\nUm den Block zu steuern nutzen Sie [W,A,S,D] und [F] um das Spiel abzurechen.\nUm zu Starten druecken Sie eine beliebige Taste.");
+    printf("Welcome to Tetris.\nTo controll the block please use [W,A,S,D] and use [F] to abort the game.\nTo start press any key.");
     getch();
     fflush(stdin);
 
@@ -142,7 +140,7 @@ int main()
         printf("NEW HIGHSCORE   %.6d\nPLEASE ENTER YOUR NAME (3 CHARACTERS):\n", score);
         for (int i = 0; i < 3; i++)
         {
-            highscoreName[i] = getche();
+            highscoreName[i] = getchar();
             if (highscoreName[i] > 90)
             {
                 highscoreName[i] -= 32;
@@ -171,15 +169,6 @@ int main()
     return 0;
 }
 
-// Quelle: https://www.quora.com/What-is-the-gotoxy-function-used-in-C Zugegriffen am 03.02.2023
-// Springt an einen bestimmten Punkt im Terminal
-void gotoxy(int x, int y)
-{
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD position = {x, y};
-    SetConsoleCursorPosition(h, position);
-}
-
 // Fügt jeweils 2 Spalten am Rand und eine Zeile unten im Array mit festen Blöcken
 void border()
 {
@@ -190,41 +179,20 @@ void border()
         field[i][WIDTH - 1] = 2;
         field[i][WIDTH - 2] = 2;
     }
+
     for (int k = 0; k < WIDTH; k++)
     {
         field[HEIGHT - 1][k] = 2;
     }
 }
 
-// Funktion wird momentan nicht benutzt
-// Gibt ein Feld Template auf dem Bildschirm aus in dem das Spiel stattfindet
-void createField()
-{
-    system("cls");
-    gotoxy(0, 0);
-    printf("   Tetris   \n");
-    for (int i = 0; i < HEIGHT; i++)
-    {
-        printf("|");
-        for (int j = 0; j < WIDTH - 2; j++)
-        {
-            printf(" ");
-        }
-        printf("|\n");
-    }
-    for (int i = 0; i < WIDTH; i++)
-    {
-        printf("-");
-    }
-    printf("\n");
-}
-
 // Gibt das Spielfeld-Array in formatierter Form aus
 void drawField(int score, char *highscoreName, int highscore)
 {
-    system("cls");
+    char output[(HEIGHT) * (WIDTH) + 10] = "";
+    char square[2] = "";
 
-    printf("%s   %.6d\n      %.6d\n", highscoreName, highscore, score);
+    square[0] = 254;
 
     for (int i = 3; i < HEIGHT; i++)
     {
@@ -233,20 +201,23 @@ void drawField(int score, char *highscoreName, int highscore)
             switch (field[i][k])
             {
             case 0:
-                printf(" ");
+                strcat(output, " ");
                 break;
             case 1:
-                printf("+");
+                strcat(output, "#");
                 break;
             case 2:
-                printf("%c", 254);
+                strcat(output, square);
                 break;
             }
             // printf("%d", field[i][k]); // DEBUG
         }
-        printf("\n");
+        strcat(output, "\n");
     }
 
+    system("cls");
+    printf("%s   %.6d\n      %.6d\n", highscoreName, highscore, score);
+    printf("%s", output);
 }
 
 // Spawnt einen zufällig generierten Block am oberen Spielfeldrand
@@ -328,17 +299,6 @@ void rowFull(int *score)
                 for (int j = 2; j < WIDTH - 2; j++)
                 {
                     field[k][j] = field[k - 1][j];
-
-                    /*gotoxy(j, k + 1);
-                    if (field[k][j] == 2)
-                    {
-                        printf("%c", 254);
-                    }
-                    else
-                    {
-                        printf(" ");
-                    }
-                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -378,11 +338,6 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
                 {
                     field[i][k] = 0;
                     field[i + 1][k] = 1;
-                    /*gotoxy(k, i + 1);
-                    printf(" ");
-                    gotoxy(k, i + 2);
-                    printf("+");
-                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -396,12 +351,6 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
                 if (field[i][k] == 1)
                 {
                     field[i][k] = 2;
-
-                    /*gotoxy(k, i + 1);
-                    printf(" ");
-                    gotoxy(k, i + 2);
-                    printf("%c", 254);
-                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -418,6 +367,7 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
 void moveBlockRight()
 {
     int move = 1;
+
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = WIDTH - 1; k >= 0; k--)
@@ -441,12 +391,6 @@ void moveBlockRight()
                 {
                     field[i][k] = 0;
                     field[i][k + 1] = 1;
-
-                    /*gotoxy(k, i + 1);
-                    printf(" ");
-                    gotoxy(k + 1, i + 1);
-                    printf("+");
-                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -461,6 +405,7 @@ void moveBlockRight()
 void moveBlockLeft()
 {
     int move = 1;
+
     for (int i = HEIGHT - 1; i >= 0; i--)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -484,12 +429,6 @@ void moveBlockLeft()
                 {
                     field[i][k] = 0;
                     field[i][k - 1] = 1;
-
-                    /*gotoxy(k, i + 1);
-                    printf(" ");
-                    gotoxy(k - 1, i + 1);
-                    printf("+");
-                    gotoxy(0, 22);*/
                 }
             }
         }
@@ -833,7 +772,7 @@ void gameOverTest(int *ptrGameOver)
     }
 }
 
-//Haupt-Loop des Spiels mit Abfrage der Spieler-Einbagen
+// Haupt-Loop des Spiels mit Abfrage der Spieler-Einbagen
 void control(int *block, int *rot, int *score, char *highscoreName, int highscore)
 {
     char temp = 'k';
@@ -844,12 +783,12 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
     {
         if (sleep > 40)
         {
-            sleep -= 5;
+            sleep -= 2;
         }
         for (int i = 0; i < 4; i++)
         {
             Sleep(sleep);
-            
+
             temp = 'k';
             fflush(stdin);
             while (kbhit())
@@ -895,6 +834,5 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
         {
             printf("\nGAMEOVER\n");
         }
-        
     }
 }
