@@ -111,12 +111,16 @@ int main()
     FILE *fp = fopen("./scoreFile.txt", "r");
     if (fp == NULL)
     {
-        strcpy(highscoreName, "NONE");
+        strcpy(highscoreName, "NON");
         highscore = 0;
     }
     else
     {
         fscanf(fp, "%s\n%d", highscoreName, &highscore);
+        if (strlen(highscoreName) != 3)
+        {
+            strcpy(highscoreName, "NON");
+        }
     }
     fclose(fp);
 
@@ -134,12 +138,21 @@ int main()
     // Einlesen und Speichern der neuen Highscore-Daten
     if (highscore < score)
     {
-        printf("Please enter your name(10 characters max):\n");
-        for (int i = 0; i < 10; i++)
+        system("cls");
+        printf("NEW HIGHSCORE   %.6d\nPLEASE ENTER YOUR NAME (3 CHARACTERS):\n", score);
+        for (int i = 0; i < 3; i++)
         {
-            highscoreName[i] = getchar();
+            highscoreName[i] = getche();
+            if (highscoreName[i] > 90)
+            {
+                highscoreName[i] -= 32;
+            }
+            if (highscoreName[i] < 65 || highscoreName[i] > 90)
+            {
+                printf("\nNOT ALLOWED\n");
+                i = -1;
+            }
         }
-        highscoreName[10] = '\0';
 
         FILE *fp = fopen("./scoreFile.txt", "w");
         if (fp == NULL)
@@ -153,8 +166,7 @@ int main()
         fclose(fp);
     }
 
-    gotoxy(0, 30);
-    printf("Press any key to close.");
+    printf("\nPress any key to close.");
     getche();
     return 0;
 }
@@ -211,6 +223,9 @@ void createField()
 void drawField(int score, char *highscoreName, int highscore)
 {
     system("cls");
+
+    printf("%s   %.6d\n      %.6d\n", highscoreName, highscore, score);
+
     for (int i = 3; i < HEIGHT; i++)
     {
         for (int k = 1; k < WIDTH - 1; k++)
@@ -232,7 +247,6 @@ void drawField(int score, char *highscoreName, int highscore)
         printf("\n");
     }
 
-    printf("\nScore: %d\nHighscore:%s | %d", score, highscoreName, highscore);
 }
 
 // Spawnt einen zufällig generierten Block am oberen Spielfeldrand
@@ -368,7 +382,6 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
                     printf(" ");
                     gotoxy(k, i + 2);
                     printf("+");
-
                     gotoxy(0, 22);*/
                 }
             }
@@ -386,10 +399,8 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
 
                     /*gotoxy(k, i + 1);
                     printf(" ");
-
                     gotoxy(k, i + 2);
                     printf("%c", 254);
-
                     gotoxy(0, 22);*/
                 }
             }
@@ -433,10 +444,8 @@ void moveBlockRight()
 
                     /*gotoxy(k, i + 1);
                     printf(" ");
-
                     gotoxy(k + 1, i + 1);
                     printf("+");
-
                     gotoxy(0, 22);*/
                 }
             }
@@ -478,10 +487,8 @@ void moveBlockLeft()
 
                     /*gotoxy(k, i + 1);
                     printf(" ");
-
                     gotoxy(k - 1, i + 1);
                     printf("+");
-
                     gotoxy(0, 22);*/
                 }
             }
@@ -831,16 +838,21 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
 {
     char temp = 'k';
     int gameOver = 0;
+    int sleep = 200;
 
     while (gameOver != 1)
     {
-
+        if (sleep > 40)
+        {
+            sleep -= 5;
+        }
         for (int i = 0; i < 4; i++)
         {
-            Sleep(250);
+            Sleep(sleep);
+            
             temp = 'k';
             fflush(stdin);
-            if (kbhit())
+            while (kbhit())
             {
                 temp = getch();
                 fflush(stdin);
@@ -883,18 +895,6 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
         {
             printf("\nGAMEOVER\n");
         }
-        /*Sleep(75);            Wozu ist das? @Flo
-        fflush(stdin);
-        if (kbhit())
-        {
-            temp = getch();
-            fflush(stdin);
-        }
-        drawField();
-        if (temp == 'f')
-        {
-            gameOver = 1;
-            printf("\nGAMEOVER\n");
-        }*/
+        
     }
 }
