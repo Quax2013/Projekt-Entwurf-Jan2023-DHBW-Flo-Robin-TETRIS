@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Verschiedene Blöcke:
+// Alle verschiedene Blöcke:
 int square[2][2] = {1, 1,
                     1, 1};
 
@@ -96,6 +96,7 @@ int spinBlock(int block, int rot, int offset, int depth);
 void gameOverTest(int *ptrGameOver);
 void control(int *block, int *rot, int *score, char *highscoreName, int highscore);
 
+// Hauptfunktion in der das Spiel einmal durchgeführt wird.
 int main()
 {
 
@@ -106,6 +107,7 @@ int main()
     char highscoreName[11] = "";
     int highscore = 0;
 
+    // Auslesen der Highscore-Daten
     FILE *fp = fopen("./scoreFile.txt", "r");
     if (fp == NULL)
     {
@@ -118,16 +120,23 @@ int main()
     }
     fclose(fp);
 
+    // Ausgeben der Anleitung und warten auf Bereitschaft der Anwenders
+    system("cls");
+    printf("Herzlich willkommen zu Tetris.\nUm den Block zu steuern nutzen Sie [W,A,S,D] und [F] um das Spiel abzurechen.\nUm zu Starten druecken Sie eine beliebige Taste.");
+    getch();
+    fflush(stdin);
+
     system("cls");
     border();
-    // createField();
     block = spawnBlock();
     control(&block, &rotation, &score, highscoreName, highscore);
 
+    // Einlesen und Speichern der neuen Highscore-Daten
     if (highscore < score)
     {
         printf("Please enter your name(10 characters max):\n");
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++)
+        {
             highscoreName[i] = getchar();
         }
         highscoreName[10] = '\0';
@@ -151,6 +160,7 @@ int main()
 }
 
 // Quelle: https://www.quora.com/What-is-the-gotoxy-function-used-in-C Zugegriffen am 03.02.2023
+// Springt an einen bestimmten Punkt im Terminal
 void gotoxy(int x, int y)
 {
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -158,6 +168,7 @@ void gotoxy(int x, int y)
     SetConsoleCursorPosition(h, position);
 }
 
+// Fügt jeweils 2 Spalten am Rand und eine Zeile unten im Array mit festen Blöcken
 void border()
 {
     for (int i = 0; i < HEIGHT; i++)
@@ -173,6 +184,8 @@ void border()
     }
 }
 
+// Funktion wird momentan nicht benutzt
+// Gibt ein Feld Template auf dem Bildschirm aus in dem das Spiel stattfindet
 void createField()
 {
     system("cls");
@@ -194,10 +207,11 @@ void createField()
     printf("\n");
 }
 
+// Gibt das Spielfeld-Array in formatierter Form aus
 void drawField(int score, char *highscoreName, int highscore)
 {
     system("cls");
-    for (int i = 0; i < HEIGHT; i++)
+    for (int i = 3; i < HEIGHT; i++)
     {
         for (int k = 1; k < WIDTH - 1; k++)
         {
@@ -221,12 +235,12 @@ void drawField(int score, char *highscoreName, int highscore)
     printf("\nScore: %d\nHighscore:%s | %d", score, highscoreName, highscore);
 }
 
+// Spawnt einen zufällig generierten Block am oberen Spielfeldrand
 int spawnBlock()
 {
     int block = rand() % 7;
     int *blockPaste;
 
-    printf("%d\n\n", block);
     if (block == 0)
     {
         for (int i = 0; i < 2; i++)
@@ -249,7 +263,7 @@ int spawnBlock()
         switch (block)
         {
         case 1:
-            blockPaste = leftL0;
+            blockPaste = leftL0; // Pointer geben Warnungen aus. Absicht: Ausnutzung der Speicherungsart von 2D-Arrays
             break;
         case 2:
             blockPaste = rightL0;
@@ -277,6 +291,7 @@ int spawnBlock()
     return block;
 }
 
+// Checkt ob eine Reihe im Array voll ist, löscht diese und vergibt Punkte
 void rowFull(int *score)
 {
     int intRowFull = 0;
@@ -317,15 +332,16 @@ void rowFull(int *score)
     }
     if (fullRows)
     {
-        *score += 150 + 100 * (fullRows * fullRows / 2.0 - 1);
+        *score += 150 + 100 * (fullRows * fullRows / 2.0 - 1); // Extra Punkte für Multi-Reihen
     }
 }
 
+// Checkt ob der aktive Block nach unten Platz hat und bewegt ihn nach unten oder konvertiert ihn zu einem festen Block
 void moveBlockDown(int *block, int *rot, int *score, int forced)
 {
     int move = 1;
 
-    for (int i = HEIGHT - 1; i >= 0; i--)
+    for (int i = HEIGHT - 1; i >= 0; i--) // Check nach Platz
     {
         for (int k = WIDTH - 1; k >= 0; k--)
         {
@@ -338,7 +354,7 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
             }
         }
     }
-    if (move)
+    if (move) // Bewegung nach unten
     {
         for (int i = HEIGHT - 1; i >= 0; i--)
         {
@@ -358,7 +374,7 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
             }
         }
     }
-    else
+    else // Konvertierung vom aktiven Block zu einem festen
     {
         for (int i = HEIGHT - 1; i >= 0; i--)
         {
@@ -387,6 +403,7 @@ void moveBlockDown(int *block, int *rot, int *score, int forced)
     }
 }
 
+// Bewegt den aktiven Block nach rechts falls Platz ist
 void moveBlockRight()
 {
     int move = 1;
@@ -431,6 +448,7 @@ void moveBlockRight()
     }
 }
 
+// Bewegt den Block nach links falls Platz frei ist
 void moveBlockLeft()
 {
     int move = 1;
@@ -475,6 +493,7 @@ void moveBlockLeft()
     }
 }
 
+// Dreht den Block falls Platz ist, wenn nicht wird der Block in einer verschobenen Position gedreht
 int spinBlock(int block, int rot, int offset, int depth)
 {
     int testField[HEIGHT][WIDTH] = {};
@@ -482,6 +501,7 @@ int spinBlock(int block, int rot, int offset, int depth)
     int safeY = 0;
     int newRot = 0;
 
+    // Kopieren vom Spielfeld in eine Test-Array
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -499,6 +519,7 @@ int spinBlock(int block, int rot, int offset, int depth)
         }
     }
 
+    // Hardgecodete Rotationen
     switch (block)
     {
     case 0: // Quadrat
@@ -750,6 +771,8 @@ int spinBlock(int block, int rot, int offset, int depth)
         }
         break;
     }
+
+    // Test auf Überscheidungen nach dem Dreher des Block in der Test-Kopie
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -762,7 +785,7 @@ int spinBlock(int block, int rot, int offset, int depth)
                 }
                 if (block == 6 && rot == 1 && k == safeX && testField[i][k + 1] == 3)
                 {
-                    return spinBlock(block, rot, offset + 2, depth + 1);
+                    return spinBlock(block, rot, offset + 2, depth + 1); // Rekursion mit Offset zum Testen auf freie Positionen
                 }
                 else if (k > safeX)
                 {
@@ -775,6 +798,8 @@ int spinBlock(int block, int rot, int offset, int depth)
             }
         }
     }
+
+    // Kopieren vom Test-Array in Spielfeld-Array bei erfolgreier Drehung
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int k = 0; k < WIDTH; k++)
@@ -785,6 +810,7 @@ int spinBlock(int block, int rot, int offset, int depth)
     return newRot;
 }
 
+// Test ob ein Block in den Spawnbereich (4 obere Reihen) ragt und beendet das Spiel
 void gameOverTest(int *ptrGameOver)
 {
     for (int i = 0; i < 4; i++)
@@ -800,6 +826,7 @@ void gameOverTest(int *ptrGameOver)
     }
 }
 
+//Haupt-Loop des Spiels mit Abfrage der Spieler-Einbagen
 void control(int *block, int *rot, int *score, char *highscoreName, int highscore)
 {
     char temp = 'k';
@@ -846,6 +873,7 @@ void control(int *block, int *rot, int *score, char *highscoreName, int highscor
                 i = 4;
             }
         }
+
         moveBlockDown(block, rot, score, 0);
         rowFull(score);
         gameOverTest(&gameOver);
