@@ -13,3 +13,4 @@ Um das Programm zu Compiliernen brauch man einen C-Compiler (z.B. MinGW).
 Dann kann man das Programm mit 
     gcc dateiName.c -o dateiName
 compilieren.
+Das Programm besteht aus einem globalen, 2-dimensionalen Array, in welchem alle Daten gespeichert werden (Spielfeld, Blöcke, ...). Die verschiedenen Funktionen bearbeiten das Array.
